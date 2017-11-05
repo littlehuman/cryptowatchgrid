@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cryptowatch Grid</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/0.3.0/gridstack.min.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.0/jquery-ui.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.5.0/lodash.min.js"></script>
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/0.3.0/gridstack.min.js'></script>
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/0.3.0/gridstack.jQueryUI.min.js'></script>
+<script src="https://rawgit.com/jeresig/jquery.hotkeys/master/jquery.hotkeys.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js'></script>
+<style type="text/css">
+body {
+    padding: 0;
+    margin: 0;
+    background: #000;
+}
+.grid-stack-item-content {
+    background: black;
+    overflow-y: hidden !important;
+}
+.grid-stack-item:hover {
+    cursor: move;
+}
+.move {
+    position: absolute;
+    top: 0px;
+    right: 0;    
+    width: 110px;
+    height: 31px;
+    opacity: 0.1;
+}
+.grid-stack-item.ui-resizable-resizing iframe {
+    pointer-events: none;
+}
+</style>
+</head>
+<body>
+<script id="grid-item-template" type="x-tmpl-mustache">
+    <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="6" data-gs-height="8">
+        <div class="grid-stack-item-content">
+            <div class='move'></div>
+            <iframe src="{{src}}" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+</script>
+<div class="grid-stack" id='stacks'>
+</div>
+
+<script type="text/javascript">
+$('.grid-stack').gridstack({
+    alwaysShowResizeHandle: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+    verticalMargin: 0,
+    resizable: {
+        handles: 'e, se, s, sw, w'
+    }    
+});
+
+var grid = $(".grid-stack").data('gridstack');
+var template = $('#grid-item-template').html();    
+
+function addChart(coin) {
+    var rendered = Mustache.render(template, {
+        src: "https://cryptowat.ch/" + coin
+    });
+    grid.addWidget(rendered);    
+}
+
+$(document).bind('keydown', 'ctrl+o', function() {
+    var coins = prompt("Example: bitfinex/btcusd");
+    if (!coins) {
+        return;
+    }
+
+    coins.split(',').forEach(function(coin) {
+        addChart(coin.trim());
+    });
+});
+
+addChart('bitfinex/btcusd');
+</script>
+</body>
+</html>
